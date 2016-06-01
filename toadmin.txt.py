@@ -175,7 +175,10 @@ def set_priority(todo):
 
 def add_metadata(todo):
     d = input("Add +projects, @contexts or other data: ")
-    todo.text += " " + d
+    (text, projects, contexts, addons) = parse_todotext(" " + d)
+    todo.projects += projects
+    todo.contexts += contexts
+    todo.addons.update(addons)
 
 def load_options(data_file):
     return pickle.load(open(data_file, "rb"))
