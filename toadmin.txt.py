@@ -173,6 +173,10 @@ def set_priority(todo):
         todo.priority = ""
         print("No priority set.")
 
+def add_metadata(todo):
+    d = input("Add +projects, @contexts or other data: ")
+    todo.text += " " + d
+
 def load_options(data_file):
     return pickle.load(open(data_file, "rb"))
 
@@ -263,7 +267,7 @@ if args.review:
                 else:
                     continue
 
-            
+            add_metadata(todo)
             r = ask_question("Complete (N)ext, (T)oday, at a certain (D)ate or (S)omeday?", 
                     {"N": "Next", "T": "Today", "D": "Certain date", "S": "Someday"})
 
