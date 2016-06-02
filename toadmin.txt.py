@@ -231,8 +231,6 @@ for todo in local_todos:
 
     # Set creation date for undated tasks
     if not todo.created and not todo.done:
-        print("Adding date")
-        print(todo.created)
         todo.created = datetime.date.today()
 
 # Print upcoming tasks
