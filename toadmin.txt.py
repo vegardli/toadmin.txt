@@ -131,8 +131,6 @@ class LocalTodo(Todo):
             # TODO: Implement own exception
             raise Exception("Couldn't parse task: " + init_str)
 
-        print(self.created)
-
         (self.text, self.projects, self.contexts, self.addons) = parse_todotext(self.text)
 
 # Returns (text, projects, contexts, addons)
