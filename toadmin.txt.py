@@ -44,7 +44,7 @@ class Todo:
         if self.done:
             outstr += "x "
             if self.completed:
-                outstr += self.completed + " "
+                outstr += self.completed.isoformat() + " "
             if self.created:
                 outstr += self.created.isoformat() + " "
 
@@ -111,10 +111,10 @@ class LocalTodo(Todo):
             self.done = True
             
             if complete_result.group(1):
-                self.completed = datetime.datetime.strptime(complete_result.group(1), "%Y-%m-%d").date()
+                self.completed = datetime.datetime.strptime(complete_result.group(1).strip(), "%Y-%m-%d").date()
 
             if complete_result.group(2):
-                self.created = datetime.datetime.strptime(complete_result.group(2), "%Y-%m-%d").date()
+                self.created = datetime.datetime.strptime(complete_result.group(2).strip(), "%Y-%m-%d").date()
 
             self.text = complete_result.group(3)
 
@@ -300,7 +300,15 @@ if args.review:
                 continue
 
             elif r == "D":
-                print("Not yet implemented")
+                while not "due" in todo.addons:
+                    try:
+                        todo.addons["due"] = datetime.datetime.strptime(
+                                input("Enter date (YYYY-MM-DD): ").strip(), "%Y-%m-%d").date().isoformat()
+                    except ValueError:
+                        print("Format not recognized")
+                
+                todo.addons["state"] = "scheduled"
+
                 continue
 
             elif r == "S":
