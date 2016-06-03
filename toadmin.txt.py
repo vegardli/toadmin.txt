@@ -435,6 +435,11 @@ if args.review:
                 else:
                     out = "Please specify a single-letter priority"
 
+            elif command == "done":
+                index_list[target].done = True
+                index_list[target].addons["state"] = "done"
+                out = "Marked " + index_list[target].text + " as done."
+
 
             else:
                 out = ("Unknown command: " + cmd[1])
