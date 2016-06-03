@@ -370,6 +370,7 @@ if args.review:
                     print("Warning: unrecognized state: " + task.addons['state'])
                     other.append(task)
 
+        scheduled.sort(key = lambda x: x.addons["due"])
 
         index_list = next + today + scheduled + waiting + someday + new +other
 
