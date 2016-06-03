@@ -272,7 +272,8 @@ if args.review:
             print("---")
             print(todo.human_str())
 
-            if ask_question("Does it take less than 2 minutes?") == "Y":
+            r = ask_question("Does it take less than 2 minutes?", {"Y": "Yes", "N": "No", "S": "Skip"})
+            if r == "Y":
                 print("Do it now.")
                 if ask_question("Is it done?") == "Y":
                     todo.done = True
@@ -282,6 +283,10 @@ if args.review:
 
                 else:
                     continue
+
+            elif r == "S":
+                break
+
 
             add_metadata(todo)
             r = ask_question("Complete (N)ext, (T)oday, at a certain (D)ate or (S)omeday?", 
@@ -329,6 +334,7 @@ if args.review:
         scheduled = []
         waiting = []
         someday = []
+        new = []
         other = []
 
         for task in local_todos:
@@ -354,12 +360,15 @@ if args.review:
                 elif task.addons['state'] == "someday":
                     someday.append(task)
 
+                elif task.addons['state'] == "new":
+                    new.append(task)
+
                 else:
                     print("Warning: unrecognized state: " + task.addons['state'])
                     other.append(task)
 
 
-        index_list = next + today + scheduled + waiting + someday + other
+        index_list = next + today + scheduled + waiting + someday + new +other
 
 
         states = {0: "Next", 
@@ -367,7 +376,8 @@ if args.review:
                 len(next) + len(today): "Scheduled",
                 len(next) + len(today) + len(scheduled): "Waiting",
                 len(next) + len(today) + len(scheduled) + len(waiting): "Someday",
-                len(next) + len(today) + len(scheduled) + len(waiting) + len(someday): "Other"}
+                len(next) + len(today) + len(scheduled) + len(waiting) + len(someday): "New",
+                len(next) + len(today) + len(scheduled) + len(waiting) + len(someday) + len(new): "Other"}
 
         for i in range(len(index_list)):
             if i in states:
@@ -412,7 +422,7 @@ if args.review:
                     out = ("Please specify new state")
                     continue
 
-                if not new_state in ["new", "next", "today", "scheduled", "waiting", "someday"]:
+                if not new_state in ["new", "next", "today", "scheduled", "waiting", "new", "someday"]:
                     out = ("Unrecognized state: " + new_state)
                     continue
 
