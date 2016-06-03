@@ -329,6 +329,9 @@ if args.review:
     quit = False
     out = ""
     while not quit:
+        # Sort tasks
+        local_todos.sort(key = lambda x: str(x))
+
         next = []
         today = []
         scheduled = []
@@ -383,7 +386,12 @@ if args.review:
             if i in states:
                 print("\n" + states[i])
 
-            print(str(i).zfill(2) + ": " + index_list[i].human_str())
+            if index_list[i].addons["state"] == "scheduled":
+                print(str(i).zfill(2) + ": (" + index_list[i].addons["due"] + ") " + 
+                        index_list[i].human_str())
+
+            else:
+                print(str(i).zfill(2) + ": " + index_list[i].human_str())
 
         if out != "":
             print(out)
@@ -422,13 +430,28 @@ if args.review:
                     out = ("Please specify new state")
                     continue
 
-                if not new_state in ["new", "next", "today", "scheduled", "waiting", "new", "someday"]:
-                    out = ("Unrecognized state: " + new_state)
+                if new_state in ["new", "next", "today", "waiting", "new", "someday"]:
+                    index_list[target].addons["state"] = new_state
+                    out = ("Set state of " + index_list[target].text + " to " + new_state)
+
+                elif new_state == "scheduled":
+                    if "due" in index_list[target].addons:
+                        del index_list[target].addons["due"]
+
+                    while not "due" in index_list[target].addons:
+                        try:
+                            index_list[target].addons["due"] = datetime.datetime.strptime(
+                                    input("Enter date (YYYY-MM-DD): ").strip(), "%Y-%m-%d").date().isoformat()
+                        except ValueError:
+                            print("Format not recognized")
+
+                    index_list[target].addons["state"] = new_state
                     continue
 
-                index_list[target].addons["state"] = new_state
+                else:
+                    out = "Unrecognized state: " + new_state
+                    continue
 
-                out = ("Set state of " + index_list[target].text + " to " + new_state)
 
             elif command == "pri":
                 try:
@@ -456,8 +479,8 @@ if args.review:
                 continue
 
 
-# Sort tasks locally and on Habitica
-#local_todos.sort(key = lambda x: str(x))
+# Sort tasks
+local_todos.sort(key = lambda x: str(x))
 
 # Save changes
 with open(options["todo.txt-location"], "w") as local_todos_file:
