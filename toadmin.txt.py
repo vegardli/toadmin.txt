@@ -320,6 +320,125 @@ if args.review:
 
             # TODO: Implement convert to project
 
+    # Enter interactive mode
+    quit = False
+    out = ""
+    while not quit:
+        next = []
+        today = []
+        scheduled = []
+        waiting = []
+        someday = []
+        other = []
+
+        for task in local_todos:
+            if task.done:
+                continue
+
+            if not "state" in task.addons:
+                other.append(task)
+
+            else:
+                if task.addons['state'] == "next":
+                    next.append(task)
+                
+                elif task.addons['state'] == "today":
+                    today.append(task)
+                
+                elif task.addons['state'] == "scheduled":
+                    scheduled.append(task)
+                
+                elif task.addons['state'] == "waiting":
+                    waiting.append(task)
+                
+                elif task.addons['state'] == "someday":
+                    someday.append(task)
+
+                else:
+                    print("Warning: unrecognized state: " + task.addons['state'])
+                    other.append(task)
+
+
+        index_list = next + today + scheduled + waiting + someday + other
+
+
+        states = {0: "Next", 
+                len(next): "Today", 
+                len(next) + len(today): "Scheduled",
+                len(next) + len(today) + len(scheduled): "Waiting",
+                len(next) + len(today) + len(scheduled) + len(waiting): "Someday",
+                len(next) + len(today) + len(scheduled) + len(waiting) + len(someday): "Other"}
+
+        for i in range(len(index_list)):
+            if i in states:
+                print("\n" + states[i])
+
+            print(str(i).zfill(2) + ": " + index_list[i].human_str())
+
+        if out != "":
+            print(out)
+        print("Q to quit")
+
+        try:
+            inp = input("> ")
+
+        except KeyboardInterrupt:
+            quit = True
+            continue
+
+        cmd = inp.split(" ")
+
+        if cmd[0] == "q":
+            quit = True
+
+        else:
+            try:
+                target = int(cmd[0])
+                command = cmd[1]
+
+            except ValueError:
+                out = (cmd[0] + " is not a valid task number")
+                continue
+
+            except IndexError:
+                out = ("Please specify a command")
+                continue
+
+            if command == "state":
+                try:
+                    new_state = cmd[2]
+
+                except IndexError:
+                    out = ("Please specify new state")
+                    continue
+
+                if not new_state in ["new", "next", "today", "scheduled", "waiting", "someday"]:
+                    out = ("Unrecognized state: " + new_state)
+                    continue
+
+                index_list[target].addons["state"] = new_state
+
+                out = ("Set state of " + index_list[target].text + " to " + new_state)
+
+            elif command == "pri":
+                try:
+                    new_pri = cmd[2]
+
+                except IndexError:
+                    out = ("Please specify new priority")
+                    continue
+                
+                if len(new_pri) == 1 and new_pri.upper() in string.ascii_uppercase:
+                    index_list[target].priority = "(" + new_pri.upper() + ") "
+                    out = "Set priority of " + index_list[target].text + " to " + index_list[target].priority
+                    
+                else:
+                    out = "Please specify a single-letter priority"
+
+
+            else:
+                out = ("Unknown command: " + cmd[1])
+                continue
 
 
 # Sort tasks locally and on Habitica
