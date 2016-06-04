@@ -61,15 +61,22 @@ class Todo:
         for c in self.contexts:
             outstr += " " + c
         for k, v in self.addons.items():
-            outstr += " " + k + ":" + v
+            if type(v) == type(datetime.date.today()):
+                outstr += " " + k + ":" + v.isoformat()
+
+            else:
+                outstr += " " + k + ":" + v
 
         return outstr + "\n"
 
     def human_str(self):
         a = self.addons
         self.addons = {}
+        c = self.created
+        self.created = None
         s = str(self)
         self.addons = a
+        self.created = c
         return s.rstrip("\n")
 
     def get_dict(self):
@@ -150,6 +157,10 @@ def parse_todotext(text):
         contexts.append(c.lstrip(" "))
 
     for a in addon_regex.findall(text):
+        if a[0] == "due":
+            addons[a[0]] = datetime.datetime.strptime(a[1].strip(), "%Y-%m-%d").date()
+            continue
+
         addons[a[0]] = a[1]
 
     # Remove projects, contexts and addons from text
@@ -232,6 +243,11 @@ for todo in local_todos:
     # Set creation date for undated tasks
     if not todo.created and not todo.done:
         todo.created = datetime.date.today()
+
+    # Make scheduled tasks due today have state today
+    if todo.addons["state"] == "scheduled" and todo.addons["due"] == datetime.date.today():
+        print("abcabc")
+        todo.addons["state"] = "today"
 
 # Print upcoming tasks
 next_todos = []
@@ -388,7 +404,7 @@ if args.review:
                 print("\n" + states[i])
 
             if index_list[i].addons["state"] == "scheduled":
-                print(str(i).zfill(2) + ": (" + index_list[i].addons["due"] + ") " + 
+                print(str(i).zfill(2) + ": (" + index_list[i].addons["due"].isoformat() + ") " + 
                         index_list[i].human_str())
 
             else:
