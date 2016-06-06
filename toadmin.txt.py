@@ -206,6 +206,22 @@ def load_options(data_file):
 def save_options(data_file, options):
     pickle.dump(options, open(data_file, "wb"))
 
+def load_todos():
+    todos = []
+
+    with open(options["todo.txt-location"], "r") as local_todos_file:
+        for line in local_todos_file.readlines():
+            if line.strip():
+                todos.append(LocalTodo(line))
+
+    return todos
+
+
+def save_todos(local_todos):
+    with open(options["todo.txt-location"], "w") as local_todos_file:
+        for todo in local_todos:
+            local_todos_file.write(str(todo))
+
 # Load options
 if os.path.isfile(data_file):
     options = load_options(data_file)
@@ -222,12 +238,7 @@ if not "todo.txt-location" in options:
 
 
 # Load todos from todo.txt
-local_todos = []
-
-with open(options["todo.txt-location"], "r") as local_todos_file:
-    for line in local_todos_file.readlines():
-        if line.strip():
-            local_todos.append(LocalTodo(line))
+local_todos = load_todos()
 
 
 # Start action list
@@ -345,8 +356,9 @@ if args.review:
     quit = False
     out = ""
     while not quit:
-        # Sort tasks
+        # Sort & save tasks
         local_todos.sort(key = lambda x: str(x))
+        save_todos(local_todos)
 
         next = []
         today = []
@@ -500,7 +512,4 @@ if args.review:
 local_todos.sort(key = lambda x: str(x))
 
 # Save changes
-with open(options["todo.txt-location"], "w") as local_todos_file:
-    for todo in local_todos:
-        local_todos_file.write(str(todo))
-
+save_todos(local_todos)
