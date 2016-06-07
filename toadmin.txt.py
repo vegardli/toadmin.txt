@@ -256,8 +256,8 @@ for todo in local_todos:
         todo.created = datetime.date.today()
 
     # Make scheduled tasks due today have state today
-    if todo.addons["state"] == "scheduled" and todo.addons["due"] == datetime.date.today():
-        print("abcabc")
+    if ((todo.addons["state"] == "scheduled" or todo.addons["state"] == "waiting") and "due" in todo.addons and 
+            todo.addons["due"] == datetime.date.today()):
         todo.addons["state"] = "today"
 
 # Print upcoming tasks
