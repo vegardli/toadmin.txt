@@ -470,7 +470,7 @@ if args.review:
                     while not "due" in index_list[target].addons:
                         try:
                             index_list[target].addons["due"] = datetime.datetime.strptime(
-                                    input("Enter date (YYYY-MM-DD): ").strip(), "%Y-%m-%d").date().isoformat()
+                                    input("Enter date (YYYY-MM-DD): ").strip(), "%Y-%m-%d").date()
                         except ValueError:
                             print("Format not recognized")
 
