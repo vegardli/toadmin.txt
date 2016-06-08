@@ -435,7 +435,7 @@ if args.review:
 
         cmd = inp.split(" ")
 
-        if cmd[0] == "q":
+        if cmd[0] == "q" or cmd[0] == "Q":
             quit = True
 
         else:
