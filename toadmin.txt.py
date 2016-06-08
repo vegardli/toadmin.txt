@@ -500,6 +500,7 @@ if args.review:
             elif command == "done":
                 index_list[target].done = True
                 index_list[target].addons["state"] = "done"
+                index_list[target].completed = datetime.date.today()
                 out = "Marked " + index_list[target].text + " as done."
 
 
