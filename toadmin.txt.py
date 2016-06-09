@@ -356,9 +356,9 @@ if args.review and args.guided:
 
             # TODO: Implement convert to project
 
+quit = False
 if args.review:
     # Enter interactive mode
-    quit = False
     out = ""
     while not quit:
         # Sort & save tasks
@@ -519,5 +519,7 @@ if args.review:
 # Sort tasks
 local_todos.sort(key = lambda x: str(x))
 
-# Save changes
-save_todos(local_todos)
+# Don't save if we have been in interactive mode, this reduces chances of overwriting changes made elsewhere
+if not quit:
+    # Save changes
+    save_todos(local_todos)
