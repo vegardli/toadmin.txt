@@ -467,6 +467,8 @@ if args.review:
                     if "due" in index_list[target].addons:
                         del index_list[target].addons["due"]
 
+                    os.system("cal -3")
+
                     while not "due" in index_list[target].addons:
                         try:
                             index_list[target].addons["due"] = datetime.datetime.strptime(
