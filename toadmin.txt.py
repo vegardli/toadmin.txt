@@ -261,18 +261,18 @@ for todo in local_todos:
             todo.addons["due"] == datetime.date.today()):
         todo.addons["state"] = "today"
 
+next_todos = []
+today_todos = []
+for todo in local_todos:
+    if todo.addons["state"] == "next":
+        next_todos.append(todo)
+
+    elif todo.addons["state"] == "today":
+        today_todos.append(todo)
+
 # If review is set, the tasks will be printed shortly anyways
 if not args.review:
     # Print upcoming tasks
-    next_todos = []
-    today_todos = []
-    for todo in local_todos:
-        if todo.addons["state"] == "next":
-            next_todos.append(todo)
-
-        elif todo.addons["state"] == "today":
-            today_todos.append(todo)
-
     if len(next_todos) > 0:
         print("Next:")
         for t in next_todos:
