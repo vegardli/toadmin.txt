@@ -500,6 +500,8 @@ if args.review:
 
             local_todos.append(new_task)
 
+            out = "Created task \"" + new_task.text + "\""
+
 
         else:
             try:
