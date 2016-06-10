@@ -488,6 +488,19 @@ if args.review:
         if cmd[0] == "q" or cmd[0] == "Q":
             quit = True
 
+        elif cmd[0].lower() == "add":
+            new_task_str = " ".join(cmd[1:])
+            if len(new_task_str) < 1:
+                out = "Please specify todo"
+                continue
+
+            new_task = LocalTodo(new_task_str)
+            new_task.addons["state"] = "new"
+            new_task.created = datetime.date.today()
+
+            local_todos.append(new_task)
+
+
         else:
             try:
                 target = int(cmd[0])
