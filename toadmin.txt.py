@@ -329,9 +329,9 @@ def do_auto_actions(todos):
         if not todo.created and not todo.done:
             todo.created = datetime.date.today()
 
-        # Make scheduled tasks due today have state today
+        # Make scheduled tasks due today or earlier have state today
         if ((todo.addons["state"] == "scheduled" or todo.addons["state"] == "waiting") and "due" in todo.addons and 
-                todo.addons["due"] == datetime.date.today()):
+                todo.addons["due"] <= datetime.date.today()):
             todo.addons["state"] = "today"
 
     return todos
