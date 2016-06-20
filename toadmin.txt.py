@@ -44,6 +44,9 @@ data_file = os.path.join(os.path.expanduser("~"), ".toadmin.txt")
 if args.options_file:
     data_file = options.options_file
 
+# List used to filter out tasks
+filter = []
+
 # Define color codes
 class bcolors:
     BLACK = '\033[30m'
@@ -364,7 +367,7 @@ def interactive_check_todo_changes(signum, frame):
         print("WARNING: todo.txt has been modified from another application. Reloading...")
         local_todos = do_auto_actions(load_todos())
         save_todos(local_todos)
-        (s, l) = get_interactive_task_list(local_todos)
+        (s, l) = get_interactive_task_list(local_todos, filter)
         print(s)
         print("Todos reloaded.")
         todo_last_modified = time.time()
@@ -511,7 +514,6 @@ quit = False
 if args.review:
     # Enter interactive mode
     out = ""
-    filter = []
     signal.signal(signal.SIGALRM, interactive_check_todo_changes)
     signal.setitimer(signal.ITIMER_REAL, 1, 1)
 
