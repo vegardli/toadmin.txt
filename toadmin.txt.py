@@ -488,6 +488,9 @@ if args.review:
         (s, index_list) = get_interactive_task_list(local_todos, filter)
         print(s)
 
+        if len(filter) != 0:
+            print("Filter: " + ", ".join(filter))
+
         if out != "":
             print(out)
         print("Q to quit")
