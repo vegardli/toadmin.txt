@@ -44,6 +44,26 @@ data_file = os.path.join(os.path.expanduser("~"), ".toadmin.txt")
 if args.options_file:
     data_file = options.options_file
 
+# Define color codes
+class bcolors:
+    BLACK = '\033[30m'
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    LIGHTBLUE = '\033[1;34m'
+    MAGENTA = '\033[35m'
+    CYAN = '\033[36m'
+    WHITE = '\033[37m'
+
+    BOLD = '\033[1m'
+    UNDERSCORE = '\033[4m'
+    BLINK = '\033[5m'
+    REVERSE = '\033[7m'
+    CONCEALED = '\033[7m'
+
+    ENDC = '\033[0m'
+
 # Todo superclass, for both local and Habitica todos
 class Todo:
     def __str__(self):
@@ -253,6 +273,8 @@ def filter_match(task, filter):
 
 # Get string showing numbered, grouped tasks. Returns (str, index_list)
 def get_interactive_task_list(tasks, filter = []):
+    global options
+
     next = []
     today = []
     scheduled = []
@@ -267,7 +289,7 @@ def get_interactive_task_list(tasks, filter = []):
         if task.done:
             continue
 
-        if not filter_match(task, filter):
+        if not filter_match(task, filter) and not options["filter-color"]:
             continue
 
         if not "state" in task.addons:
@@ -314,11 +336,23 @@ def get_interactive_task_list(tasks, filter = []):
             return_string += "\n" + states[i] + "\n"
 
         if index_list[i].addons["state"] == "scheduled":
-            return_string += (str(i).zfill(2) + ": (" + index_list[i].addons["due"].isoformat() + ") " + 
-                    index_list[i].human_str() + "\n")
+            if ("filter-color" in options and options["filter-color"] and 
+                    filter_match(index_list[i], filter) and len(filter) > 0):
+                return_string += (str(i).zfill(2) + ": (" + index_list[i].addons["due"].isoformat() + ") " + 
+                        bcolors.GREEN + index_list[i].human_str() + bcolors.ENDC + "\n")
+
+            else:
+                return_string += (str(i).zfill(2) + ": (" + index_list[i].addons["due"].isoformat() + ") " + 
+                        index_list[i].human_str() + "\n")
 
         else:
-            return_string += str(i).zfill(2) + ": " + index_list[i].human_str() + "\n"
+            if ("filter-color" in options and options["filter-color"] and 
+                    filter_match(index_list[i], filter) and len(filter) > 0):
+                return_string += (str(i).zfill(2) + ": " + bcolors.GREEN + index_list[i].human_str() + 
+                        bcolors.ENDC + "\n")
+
+            else:
+                return_string += str(i).zfill(2) + ": " + index_list[i].human_str() + "\n"
 
     return (return_string, index_list)
 
@@ -366,6 +400,7 @@ else:
 # Take option input from user
 if not "todo.txt-location" in options:
     options["todo.txt-location"] = input("todo.txt location: ")
+    options["filter-color"] = False
     # Make sure the file can be written to
     open(options["todo.txt-location"], "a").close()
     save_options(data_file, options)
@@ -545,6 +580,23 @@ if args.review:
             else:
                 filter.append(cmd[1].strip())
                 out = "Added filter " + cmd[1]
+
+        elif cmd[0].lower() == "option":
+            if len(cmd) != 3:
+                out = "Please specity name and value"
+                continue
+
+            if cmd[2].lower() == "on":
+                options[cmd[1]] = True
+
+            elif cmd[2].lower() == "off":
+                options[cmd[1]] = False
+
+            else:
+                out = "Invalid value"
+                continue
+
+            save_options(data_file, options)
 
 
         else:
