@@ -234,8 +234,25 @@ def save_todos(local_todos):
 
     todo_last_modified = time.time()
 
+def filter_match(task, filter):
+    if len(filter) == 0:
+        return True
+
+    for i in filter:
+        match = False
+        for j in task.projects:
+            if i == j:
+                match = True
+                break
+
+        if not match:
+            return False
+
+    return True
+
+
 # Get string showing numbered, grouped tasks. Returns (str, index_list)
-def get_interactive_task_list(tasks):
+def get_interactive_task_list(tasks, filter = []):
     next = []
     today = []
     scheduled = []
@@ -248,6 +265,9 @@ def get_interactive_task_list(tasks):
 
     for task in local_todos:
         if task.done:
+            continue
+
+        if not filter_match(task, filter):
             continue
 
         if not "state" in task.addons:
@@ -456,6 +476,7 @@ quit = False
 if args.review:
     # Enter interactive mode
     out = ""
+    filter = []
     signal.signal(signal.SIGALRM, interactive_check_todo_changes)
     signal.setitimer(signal.ITIMER_REAL, 1, 1)
 
@@ -464,7 +485,7 @@ if args.review:
         local_todos.sort(key = lambda x: str(x))
         save_todos(local_todos)
 
-        (s, index_list) = get_interactive_task_list(local_todos)
+        (s, index_list) = get_interactive_task_list(local_todos, filter)
         print(s)
 
         if out != "":
@@ -480,7 +501,7 @@ if args.review:
 
         # If todo.txt is modified by another program, make sure we have correct task list numbers
         if todo_externally_changed:
-            (s, index_list) = get_interactive_task_list(local_todos)
+            (s, index_list) = get_interactive_task_list(local_todos, filter)
             todo_externally_changed = False
 
         cmd = inp.split(" ")
@@ -501,6 +522,26 @@ if args.review:
             local_todos.append(new_task)
 
             out = "Created task \"" + new_task.text + "\""
+
+        elif cmd[0].lower() == "filter":
+            if len(cmd) == 1:
+                out = "Please specify filter"
+                continue
+
+            if len(cmd) > 2:
+                out = "Too many arguments for filter"
+                continue
+
+            if cmd[1][0] == "-":
+                for i in range(len(filter)):
+                    if filter[i][1:] == cmd[1][1:]:
+                        del filter[i]
+                        out = "Removed filter " + cmd[1][1:]
+                        break
+
+            else:
+                filter.append(cmd[1].strip())
+                out = "Added filter " + cmd[1]
 
 
         else:
