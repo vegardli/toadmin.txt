@@ -640,6 +640,8 @@ if args.review:
                             print("Format not recognized")
 
                     index_list[target].addons["state"] = new_state
+                    out = ("Scheduled " + index_list[target].text + " for " + 
+                            index_list[target].addons["due"].isoformat())
                     continue
 
                 else:
