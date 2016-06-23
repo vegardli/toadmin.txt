@@ -28,7 +28,7 @@ import pickle,os,re,datetime,argparse,string,signal,time
 # Parse command-line options
 parser = argparse.ArgumentParser(description="Automate certain todo list tasks")
 parser.add_argument("--options_file", help="File to read and write options")
-parser.add_argument("--review", action="store_true", help="Perform review")
+parser.add_argument("--summary", action="store_true", help="Show summary of tasks")
 parser.add_argument("--guided", action="store_true", help="Go through tasks needing attention step-by-step")
 args = parser.parse_args()
 
@@ -424,8 +424,8 @@ for todo in local_todos:
     elif todo.addons["state"] == "today":
         today_todos.append(todo)
 
-# If review is set, the tasks will be printed shortly anyways
-if not args.review:
+# If summary is not set, the tasks will be printed shortly anyways
+if args.summary:
     # Print upcoming tasks
     if len(next_todos) > 0:
         print("Next:")
@@ -439,7 +439,7 @@ if not args.review:
 
 
 if args.guided:
-    if len(next_todos) == 0 and args.review:
+    if len(next_todos) == 0 and not args.summary:
         if len(today_todos) > 0:
             if ask_question("No todos marked as next, go through list for today?") == "Y":
                 for todo in today_todos:
@@ -451,7 +451,7 @@ if args.guided:
 
 
 # Do review
-if args.review and args.guided:
+if not args.summary and args.guided:
     for todo in local_todos:
         if todo.addons["state"] == "new":
             print("---")
@@ -511,7 +511,7 @@ if args.review and args.guided:
             # TODO: Implement convert to project
 
 quit = False
-if args.review:
+if not args.summary:
     # Enter interactive mode
     out = ""
     signal.signal(signal.SIGALRM, interactive_check_todo_changes)
