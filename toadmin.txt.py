@@ -523,6 +523,7 @@ if not args.summary:
         save_todos(local_todos)
 
         (s, index_list) = get_interactive_task_list(local_todos, filter)
+        print('\n')
         print(s)
 
         if len(filter) != 0:
