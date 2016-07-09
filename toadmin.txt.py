@@ -393,9 +393,27 @@ def do_auto_actions(todos):
 
     return todos
 
+def filter_append(filter, element):
+    filter.append(element)
+    options['filter'] = filter
+    save_options(data_file, options)
+    return "Added filter " + element
+
+def filter_remove(filter, element):
+    for i in range(len(filter)):
+        if filter[i][1:] == element:
+            del filter[i]
+            save_options(data_file, options)
+            return "Removed filter " + element
+
+    return element + " not found in filter"
+
 # Load options
 if os.path.isfile(data_file):
     options = load_options(data_file)
+
+    if 'filter' in options:
+        filter = options['filter']
 
 else:
     options = {}
@@ -574,15 +592,10 @@ if not args.summary:
                 continue
 
             if cmd[1][0] == "-":
-                for i in range(len(filter)):
-                    if filter[i][1:] == cmd[1][1:]:
-                        del filter[i]
-                        out = "Removed filter " + cmd[1][1:]
-                        break
+                out = filter_remove(filter, cmd[1][1:])
 
             else:
-                filter.append(cmd[1].strip())
-                out = "Added filter " + cmd[1]
+                out = filter_append(filter, cmd[1].strip())
 
         elif cmd[0].lower() == "option":
             if len(cmd) != 3:
