@@ -565,7 +565,11 @@ if not args.summary:
 
         cmd = inp.split(" ")
 
-        if cmd[0] == "q" or cmd[0] == "Q":
+        if cmd[0] == "":
+            out = ""
+            continue
+
+        elif cmd[0] == "q" or cmd[0] == "Q":
             quit = True
 
         elif cmd[0].lower() == "add":
@@ -604,9 +608,11 @@ if not args.summary:
 
             if cmd[2].lower() == "on":
                 options[cmd[1]] = True
+                out = "Turned " + cmd[1] + " on"
 
             elif cmd[2].lower() == "off":
                 options[cmd[1]] = False
+                out = "Turned " + cmd[1] + " off"
 
             else:
                 out = "Invalid value"
